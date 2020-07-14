@@ -1,0 +1,67 @@
+EXP:
+    ID: voc12
+    OUTPUT_DIR: dataF
+    EVALUATE_ITER: 1000 
+    # assign gpu
+    # please install torch-encoding
+    GPU_IDX: [0, 1, 2, 3]
+
+
+DATASET:
+    NAME: vocaug
+    ROOT: ./VOCdevkit
+    LABELS: ./data/datasets/voc12/labels.txt
+    N_CLASSES: 21
+    IGNORE_LABEL: 255
+    SCALES: [0.5, 0.75, 1.0, 1.25, 1.5]
+    SPLIT:
+        # finetune on trainval or train_aug
+        TRAIN: train_aug
+        VAL: val
+        TEST: test
+
+DATALOADER:
+    # set NUM_WORKERS to 0 if shm not enough
+    NUM_WORKERS: 8
+
+IMAGE:
+    MEAN:
+        R: 122.675
+        G: 116.669
+        B: 104.008
+    SIZE:
+        BASE: # None
+        TRAIN: 321
+        TEST: 513
+
+MODEL:
+    NAME: DeepLabV2_DRN105_MSC
+    N_BLOCKS: [3, 4, 23, 3]
+    ATROUS_RATES: [6, 12, 18, 24]
+    # load pretrain weight on imageNet
+    INIT_MODEL: ./data/models/voc12/deeplabv2_drn105_msc/train_aug/checkpoint_r.pth  
+
+SOLVER:
+    BATCH_SIZE:
+        #　smaller batch size to finetune
+        TRAIN: 12
+        TEST: 1
+    ITER_MAX: 30000
+    ITER_SIZE: 1
+    ITER_SAVE: 1000
+    ITER_TB: 500
+    LR_DECAY: 10
+    LR: 0.001
+    MOMENTUM: 0.9
+    OPTIMIZER: sgd
+    POLY_POWER: 0.9
+    WEIGHT_DECAY: 5.0e-4
+    AVERAGE_LOSS: 20
+
+CRF:
+    ITER_MAX: 10
+    POS_W: 3
+    POS_XY_STD: 1
+    BI_W: 4
+    BI_XY_STD: 67
+    BI_RGB_STD: 3

@@ -5,6 +5,8 @@ from .deeplabv2 import *
 from .deeplabv3 import *
 from .deeplabv3plus import *
 from .msc import *
+from .DRN import *
+
 
 
 def init_weights(module):
@@ -92,3 +94,14 @@ def DeepLabV3Plus_ResNet101_MSC(n_classes, output_stride=16):
             module.momentum = 0.9997
 
     return MSC(base=base, scales=[0.5, 0.75])
+
+
+def DeepLabV2_DRN105_MSC(n_classes, pretrained=False, init_model=None):
+    return MSC(
+        base=DeepLabV2_DRN105(n_classes=n_classes,
+                              atrous_rates=[3, 6, 9, 12],
+                              pretrained=pretrained,
+                              init_model=init_model),
+        scales=[0.5, 0.75],
+    )
+

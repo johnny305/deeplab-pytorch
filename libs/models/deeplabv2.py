@@ -12,6 +12,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 from .resnet import _ConvBnReLU, _ResLayer, _Stem
+from .DRN import drn_d_105
 
 
 class _ASPP(nn.Module):
@@ -55,6 +56,29 @@ class DeepLabV2(nn.Sequential):
         for m in self.modules():
             if isinstance(m, _ConvBnReLU.BATCH_NORM):
                 m.eval()
+
+
+class DeepLabV2_DRN105(nn.Module):
+    '''
+    DeepLabV2 - Dilated ResNet-101 
+    Weight: pretrained on imageNet
+    '''
+    def __init__(self, n_classes, atrous_rates, pretrained=False, init_model=None):
+        super(DeepLabV2_DRN105, self).__init__()
+        ch = [64 * 2**p for p in range(6)]
+        self.resnet = drn_d_105(pretrained, init_model)
+        self.inch = ch[5]
+        self.aspp = _ASPP(self.inch, n_classes, atrous_rates)
+
+    def freeze_bn(self):
+        for m in self.modules():
+            if isinstance(m, _ConvBnReLU.BATCH_NORM):
+                m.eval()
+
+    def forward(self, x):
+        x = self.resnet(x)
+        out = self.aspp(x)
+        return out
 
 
 if __name__ == "__main__":
