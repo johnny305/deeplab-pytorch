@@ -8,7 +8,7 @@ EXP:
 
 
 DATASET:
-    NAME: h16 #vocaug
+    NAME: vocaug #h16
     ROOT: ./VOCdevkit
     LABELS: ./data/datasets/voc12/labels.txt
     N_CLASSES: 21
